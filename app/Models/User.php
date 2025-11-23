@@ -45,4 +45,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function movements()
+    {
+    return $this->hasMany(InventoryMovement::class);
+    }
 }
