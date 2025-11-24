@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class InventoryMovementController extends Controller
 {
+
     public function index()
     {
         $movements = InventoryMovement::with('product', 'user')
@@ -19,6 +20,7 @@ class InventoryMovementController extends Controller
 
     public function create()
     {
+
         $products = Product::orderBy('name')->get();
 
         return view('movements.create', compact('products'));

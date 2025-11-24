@@ -4,44 +4,53 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryMovementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard visible para todos
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ADMIN — acceso total
+    // ADMIN
     Route::middleware(['role:admin'])->group(function () {
+
+        // Productos
         Route::resource('products', ProductController::class);
-        Route::resource('movements', InventoryMovementController::class);
+
+        // Movimientos ADMIN (URL diferente para evitar choques)
+        Route::get('admin/movements', [InventoryMovementController::class, 'index'])->name('admin.movements.index');
+        Route::get('admin/movements/create', [InventoryMovementController::class, 'create'])->name('admin.movements.create');
+        Route::post('admin/movements', [InventoryMovementController::class, 'store'])->name('admin.movements.store');
+
+        // Usuarios
+        Route::resource('admin/users', UserController::class);
     });
 
-    // NURSE — solo movimientos
+    // NURSE
     Route::middleware(['role:nurse'])->group(function () {
-        Route::resource('movements', InventoryMovementController::class)->only(['index', 'create', 'store']);
+        Route::get('nurse/movements', [InventoryMovementController::class, 'index'])->name('nurse.movements.index');
+        Route::get('nurse/movements/create', [InventoryMovementController::class, 'create'])->name('nurse.movements.create');
+        Route::post('nurse/movements', [InventoryMovementController::class, 'store'])->name('nurse.movements.store');
     });
 
-    // DOCTOR — solo lectura
+
+    // DOCTOR
     Route::middleware(['role:doctor'])->group(function () {
         Route::resource('products', ProductController::class)->only(['index', 'show']);
     });
 
-    // ASSISTANT — solo lectura básica
+
+    // ASSISTANT
     Route::middleware(['role:assistant'])->group(function () {
         Route::resource('products', ProductController::class)->only(['index']);
     });
+
 
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    //Vista solo para admin
-    Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('admin/users', UserController::class);
-});
+
 });
 
 require __DIR__.'/auth.php';
