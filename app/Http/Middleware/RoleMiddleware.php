@@ -8,16 +8,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $roles): Response
     {
-        if (!in_array($request->user()->role, $roles)) {
-        abort(403, 'No tienes permisos para acceder a esta sección.');
-    }
+        $allowedRoles = explode(',', $roles);
+
+        if (!in_array($request->user()->role, $allowedRoles)) {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
+        }
+
         return $next($request);
     }
 }

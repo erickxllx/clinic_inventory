@@ -3,6 +3,26 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<div class="max-w-6xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6 text-gray-700">Bienvenido al Dashboard</h1>
+
+    {{-- Mensaje según rol --}}
+    @if($role === 'admin')
+        <p class="text-blue-600 mb-4">Tienes acceso total al sistema.</p>
+    @endif
+
+    @if($role === 'nurse')
+        <p class="text-green-600 mb-4">Puedes registrar movimientos del inventario.</p>
+    @endif
+
+    @if($role === 'doctor')
+        <p class="text-purple-600 mb-4">Tienes acceso de lectura.</p>
+    @endif
+
+    @if($role === 'assistant')
+        <p class="text-gray-600 mb-4">Acceso limitado a consultas.</p>
+    @endif
 
 <div class="max-w-7xl mx-auto px-6 py-8">
 

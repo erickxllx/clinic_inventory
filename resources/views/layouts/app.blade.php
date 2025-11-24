@@ -30,7 +30,7 @@
             <!-- Page Content -->
             <main>
     @yield('content')
-    </main>
+</main>
         </div>
     </body>
 </html>

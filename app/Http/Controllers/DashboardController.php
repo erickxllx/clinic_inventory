@@ -10,22 +10,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $role = auth()->user()->role;
+
         // Total de medicamentos
         $totalProducts = Product::count();
 
-        // Medicamentos con bajo stock (current_qty <= min_stock)
+        // Medicamentos con bajo stock
         $lowStockProducts = Product::whereColumn('current_qty', '<=', 'min_stock')
                                     ->orderBy('current_qty', 'asc')
                                     ->take(5)
                                     ->get();
 
-        // Últimos movimientos (entradas/salidas/ajustes)
+        // Últimos movimientos
         $latestMovements = InventoryMovement::with('product', 'user')
                                             ->latest()
                                             ->take(5)
                                             ->get();
 
-        // Datos para gráfica (últimos 7 días)
+        // Gráfica — últimos 7 días
         $chartLabels = [];
         $chartData = [];
 
@@ -33,11 +35,12 @@ class DashboardController extends Controller
             $date = now()->subDays($i)->toDateString();
             $chartLabels[] = $date;
 
-            $count = InventoryMovement::whereDate('date', $date)->count();
+            $count = InventoryMovement::whereDate('created_at', $date)->count();
             $chartData[] = $count;
         }
 
         return view('dashboard.index', compact(
+            'role',
             'totalProducts',
             'lowStockProducts',
             'latestMovements',
