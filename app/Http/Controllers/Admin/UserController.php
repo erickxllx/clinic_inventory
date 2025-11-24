@@ -36,7 +36,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', 'Usuario creado correctamente');
     }
 
@@ -59,7 +59,7 @@ class UserController extends Controller
             'role'  => $request->role,
         ]);
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', 'Usuario actualizado');
     }
 
