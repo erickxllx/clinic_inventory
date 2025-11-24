@@ -15,7 +15,7 @@
         <h1 class="text-2xl font-bold text-gray-700">Movimientos</h1>
 
         @if(in_array(auth()->user()->role, ['admin','nurse']))
-            <a href="{{ route('admin.movements.create') }}"
+            <a href="{{ route('movements.create') }}"
                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700">
                 + Nuevo Movimiento
             </a>

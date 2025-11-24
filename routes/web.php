@@ -6,64 +6,110 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PdfController;
 
 Route::middleware(['auth'])->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ADMIN
-    Route::middleware(['role:admin'])->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCTOS - TODOS LOS ROLES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 
-        // Productos
-        Route::resource('products', ProductController::class);
+    /*
+    |--------------------------------------------------------------------------
+    | MOVEMENTS - COMPARTIDO ENTRE ADMIN Y NURSE
+    |--------------------------------------------------------------------------
+    | Ambos roles pueden usar estos métodos (index, create, store)
+    | Validación de permisos se hace desde middleware en las rutas de abajo.
+    |--------------------------------------------------------------------------
+    */
 
-        // Movimientos ADMIN (URL diferente para evitar choques)
-        Route::get('admin/movements', [InventoryMovementController::class, 'index'])->name('admin.movements.index');
-        Route::get('admin/movements/create', [InventoryMovementController::class, 'create'])->name('admin.movements.create');
-        Route::post('admin/movements', [InventoryMovementController::class, 'store'])->name('admin.movements.store');
+    Route::get('movements', [InventoryMovementController::class, 'index'])->name('movements.index');
+    Route::get('movements/create', [InventoryMovementController::class, 'create'])->name('movements.create');
+    Route::post('movements', [InventoryMovementController::class, 'store'])->name('movements.store');
 
-        // Usuarios
-       Route::prefix('admin')
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN - TIENE ACCESO TOTAL
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admin')
         ->name('admin.')
         ->middleware(['role:admin'])
         ->group(function () {
+
+            // Productos
+            Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+            Route::post('products', [ProductController::class, 'store'])->name('products.store');
+            Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+            Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+            Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+            // Movimientos pueden verse desde /movements
+            // Usuarios
             Route::resource('users', UserController::class);
         });
 
-    });
-
-    // NURSE
+    /*
+    |--------------------------------------------------------------------------
+    | NURSE - SOLO CREA Y VE MOVIMIENTOS
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:nurse'])->group(function () {
-        Route::get('nurse/movements', [InventoryMovementController::class, 'index'])->name('nurse.movements.index');
-        Route::get('nurse/movements/create', [InventoryMovementController::class, 'create'])->name('nurse.movements.create');
-        Route::post('nurse/movements', [InventoryMovementController::class, 'store'])->name('nurse.movements.store');
+        // Redirige rutas nurse a las principales
+        Route::get('nurse/movements', fn() => redirect()->route('movements.index'))->name('nurse.movements.index');
+        Route::get('nurse/movements/create', fn() => redirect()->route('movements.create'))->name('nurse.movements.create');
+        Route::post('nurse/movements', fn() => redirect()->route('movements.store'))->name('nurse.movements.store');
     });
 
-
-    // DOCTOR
+    /*
+    |--------------------------------------------------------------------------
+    | DOCTOR
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:doctor'])->group(function () {
-        Route::resource('products', ProductController::class)->only(['index', 'show']);
+        // aquí puedes agregar permisos especiales si deseas
     });
 
-
-    // ASSISTANT
+    /*
+    |--------------------------------------------------------------------------
+    | ASSISTANT
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:assistant'])->group(function () {
-        Route::resource('products', ProductController::class)->only(['index']);
+        // lo mismo
     });
 
-
-    // Perfil
+    /*
+    |--------------------------------------------------------------------------
+    | PERFIL
+    |--------------------------------------------------------------------------
+    */
     Route::get('/profile', function () {
         return view('profile.show');
-        })->name('profile.show');
+    })->name('profile.show');
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    /*
+    |--------------------------------------------------------------------------
+    | PDFS
+    |--------------------------------------------------------------------------
+    */
     Route::get('/pdf/stock-bajo', [PdfController::class, 'stockBajo'])->name('pdf.stock-bajo');
     Route::get('/pdf/movimientos', [PdfController::class, 'movimientos'])->name('pdf.movimientos');
-
-
+    Route::get('/pdf/medicamentos', [PdfController::class, 'medicamentos'])->name('pdf.medicamentos');
 });
 
 require __DIR__.'/auth.php';

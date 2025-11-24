@@ -133,11 +133,11 @@
 
 
     <!-- Gráfica -->
-    <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100">
-        <h2 class="text-xl font-bold mb-4 text-gray-700">Movimientos en los últimos 7 días</h2>
+   <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100" style="height: 350px;">
+    <h2 class="text-xl font-bold mb-4 text-gray-700">Movimientos en los últimos 7 días</h2>
+    <canvas id="movChart" class="w-full h-full"></canvas>
+</div>
 
-        <canvas id="movChart"></canvas>
-    </div>
 
 </div>
 
@@ -145,15 +145,80 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-function searchTable(input, tableId) {
-    let filter = input.value.toLowerCase();
-    let rows = document.querySelectorAll(`#${tableId} tbody tr`);
+document.addEventListener("DOMContentLoaded", () => {
+    const ctx = document.getElementById('movChart').getContext('2d');
 
-    rows.forEach(row => {
-        let text = row.innerText.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+    // 🎨 Gradiente profesional (azul -> transparente)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.35)');  
+    gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @json($chartLabels),
+            datasets: [{
+                label: 'Movimientos',
+                data: @json($chartData),
+                fill: true,
+                backgroundColor: gradient,
+                borderColor: '#2563EB',
+                borderWidth: 3,
+                tension: 0.45, 
+                pointBackgroundColor: '#1E40AF',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 2,
+                pointHoverBackgroundColor: '#3B82F6',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false  // Quita el texto "Movimientos"
+                },
+                tooltip: {
+                    backgroundColor: '#1E293B',
+                    titleColor: '#fff',
+                    bodyColor: '#CBD5E1',
+                    padding: 12,
+                    borderWidth: 0,
+                    displayColors: false,
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#475569',
+                        font: {
+                            size: 12,
+                            weight: '500'
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(203, 213, 225, 0.4)'
+                    },
+                    ticks: {
+                        color: '#475569',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
     });
-}
+});
 </script>
+
 
 @endsection

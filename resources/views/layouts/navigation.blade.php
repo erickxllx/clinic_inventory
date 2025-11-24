@@ -27,16 +27,23 @@
                             </a>
                         @endif
                     @endauth
+                    @auth
+                        <a href="{{ route('products.index') }}"
+                        class="text-sm font-medium hover:text-blue-600 transition {{ request()->routeIs('products.*') ? 'text-blue-600' : 'text-gray-600' }}">
+                            Productos
+                        </a>
+                    @endauth
+
                 </div>
 
                 <!-- ACTION BUTTONS -->
                 <div class="hidden sm:flex space-x-3">
-                    <a href="{{ route('admin.movements.create', ['type' => 'salida']) }}"
+                    <a href="{{ route('movements.create', ['type' => 'salida']) }}"
                        class="px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
                         Registrar Venta
                     </a>
 
-                    <a href="{{ route('admin.movements.create', ['type' => 'entrada']) }}"
+                    <a href="{{ route('movements.create', ['type' => 'entrada']) }}"
                        class="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
                         Nuevo Ingreso
                     </a>
@@ -98,16 +105,18 @@
             @if(Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.users.index')">Usuarios</x-responsive-nav-link>
             @endif
+
+            <x-responsive-nav-link :href="route('products.index')">Productos</x-responsive-nav-link>
         </div>
 
         <!-- MOBILE ACTION BUTTONS -->
         <div class="px-4 pb-3 space-y-2">
-            <a href="{{ route('admin.movements.create', ['type' => 'salida']) }}"
+            <a href="{{ route('movements.create', ['type' => 'salida']) }}"
                class="block text-center px-4 py-2 bg-red-600 text-white rounded-lg">
                 Registrar Venta
             </a>
 
-            <a href="{{ route('admin.movements.create', ['type' => 'entrada']) }}"
+            <a href="{{ route('movements.create', ['type' => 'entrada']) }}"
                class="block text-center px-4 py-2 bg-blue-600 text-white rounded-lg">
                 Nuevo Ingreso
             </a>

@@ -32,16 +32,20 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'stock'       => 'required|integer|min:0',
-            'min_stock'   => 'required|integer|min:0',
-            'image'       => 'nullable|image|max:2048',
+            'name'          => 'required|string|max:255',
+            'presentation'  => 'nullable|string|max:255',
+            'initial_qty'   => 'required|integer|min:0',
+            'min_stock'     => 'required|integer|min:0',
+            'photo'         => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
+        // Guardar foto
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('products', 'public');
         }
+
+        // current_qty inicia igual que initial_qty
+        $data['current_qty'] = $data['initial_qty'];
 
         Product::create($data);
 
@@ -49,6 +53,8 @@ class ProductController extends Controller
             ->route('products.index')
             ->with('success', 'Medicamento creado correctamente.');
     }
+
+
 
     /**
      * Formulario de edición
@@ -61,23 +67,26 @@ class ProductController extends Controller
     /**
      * Actualizar medicamento
      */
-    public function update(Request $request, Product $product)
+        public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'stock'       => 'required|integer|min:0',
-            'min_stock'   => 'required|integer|min:0',
-            'image'       => 'nullable|image|max:2048',
+            'name'          => 'required|string|max:255',
+            'presentation'  => 'nullable|string|max:255',
+            'current_qty'   => 'required|integer|min:0',
+            'min_stock'     => 'required|integer|min:0',
+            'photo'         => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            // borrar imagen anterior si existe
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+        // Si suben una nueva foto
+        if ($request->hasFile('photo')) {
+
+            // Borrar foto anterior si existe
+            if ($product->photo) {
+                \Storage::disk('public')->delete($product->photo);
             }
 
-            $data['image'] = $request->file('image')->store('products', 'public');
+            // Guardar nueva foto
+            $data['photo'] = $request->file('photo')->store('products', 'public');
         }
 
         $product->update($data);
@@ -86,6 +95,7 @@ class ProductController extends Controller
             ->route('products.index')
             ->with('success', 'Medicamento actualizado correctamente.');
     }
+
 
     /**
      * Eliminar medicamento
