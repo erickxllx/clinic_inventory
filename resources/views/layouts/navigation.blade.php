@@ -1,34 +1,41 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-200 shadow-md">
 
-    <!-- Contenedor Principal -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
 
-            <!-- LOGO + LINKS -->
+            <!-- LOGO + MENÚ -->
             <div class="flex items-center space-x-8">
 
                 <!-- LOGO -->
-                <a href="{{ route('dashboard') }}" class="flex items-center">
+                <a href="{{ route('dashboard') }}">
                     <x-application-logo class="block h-9 w-auto text-blue-700" />
                 </a>
 
-                <!-- MENU DESKTOP -->
-                <div class="hidden sm:flex space-x-6">
+                <!-- MENÚ DESKTOP -->
+                <div class="hidden sm:flex items-center space-x-6">
 
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         Dashboard
                     </x-nav-link>
 
+                    @auth
+                        @if(Auth::user()->role === 'admin')
+                            <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                                Usuarios
+                            </x-nav-link>
+                        @endif
+                    @endauth
+
                 </div>
 
-                <!-- BOTONES DESKTOP -->
+                <!-- BOTONES ACCIÓN -->
                 <a href="{{ route('admin.movements.create', ['type' => 'salida']) }}"
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+                   class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
                     Registrar Venta
                 </a>
 
                 <a href="{{ route('admin.movements.create', ['type' => 'entrada']) }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
                     Nuevo Ingreso
                 </a>
 
@@ -58,15 +65,15 @@
                 </x-dropdown>
             </div>
 
-            <!-- BOTÓN HAMBURGUESA -->
+            <!-- MENÚ MOVIL -->
             <div class="flex sm:hidden">
                 <button @click="open = !open"
                         class="p-2 rounded-md text-gray-600 hover:bg-gray-200 transition">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor">
                         <path :class="{'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                              d="M4 6h16M4 12h16M4 18h16" stroke-width="2" stroke-linecap="round" />
+                              d="M4 6h16M4 12h16M4 18h16" stroke-width="2" />
                         <path :class="{'hidden': !open, 'inline-flex': open }" class="hidden"
-                              d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" />
+                              d="M6 18L18 6M6 6l12 12" stroke-width="2" />
                     </svg>
                 </button>
             </div>
@@ -74,60 +81,39 @@
         </div>
     </div>
 
-    <!-- MENU RESPONSIVE -->
+
+    <!-- MENÚ RESPONSIVE -->
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden bg-white border-t border-gray-200">
 
-        <!-- Links principales -->
-        <div class="pt-3 pb-2 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                Dashboard
-            </x-responsive-nav-link>
-        </div>
+        <x-responsive-nav-link :href="route('dashboard')">Dashboard</x-responsive-nav-link>
 
-        <!-- ACCIONES RESPONSIVE -->
-        <div class="px-4 pb-4 space-y-3">
+        @if(Auth::user()->role === 'admin')
+            <x-responsive-nav-link :href="route('admin.users.index')">Usuarios</x-responsive-nav-link>
+        @endif
 
-            <!-- Registrar Venta -->
-            <a href="{{ route('admin.movements.create', ['type' => 'salida']) }}"
-               class="block w-full text-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
-                Registrar Venta
-            </a>
+        <a href="{{ route('admin.movements.create', ['type' => 'salida']) }}"
+           class="block w-full text-center px-4 py-2 bg-red-600 text-white">Registrar Venta</a>
 
-            <!-- Nuevo Ingreso -->
-            <a href="{{ route('admin.movements.create', ['type' => 'entrada']) }}"
-               class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-                Nuevo Ingreso
-            </a>
-        </div>
+        <a href="{{ route('admin.movements.create', ['type' => 'entrada']) }}"
+           class="block w-full text-center px-4 py-2 bg-blue-600 text-white">Nuevo Ingreso</a>
 
-        <!-- USER INFO RESPONSIVE -->
+        <!-- USER INFO -->
         <div class="border-t border-gray-200 pt-4 pb-1">
-
             <div class="px-4">
-                <div class="font-medium text-base text-gray-900">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-600">{{ Auth::user()->email }}</div>
+                <div class="text-base text-gray-900">{{ Auth::user()->name }}</div>
+                <div class="text-sm text-gray-600">{{ Auth::user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">Perfil</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('profile.edit')">Perfil</x-responsive-nav-link>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                                           onclick="event.preventDefault(); this.closest('form').submit();">
-                        Cerrar Sesión
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <x-responsive-nav-link :href="route('logout')"
+                    onclick="event.preventDefault(); this.closest('form').submit();">
+                    Cerrar Sesión
+                </x-responsive-nav-link>
+            </form>
         </div>
-        @can('isAdmin')
-            <a href="{{ route('admin.users.index') }}"
-                class="px-3 py-2 text-gray-700 hover:text-blue-600 transition">
-                Usuarios
-            </a>
-        @endcan
-
-
     </div>
 
 </nav>

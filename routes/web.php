@@ -23,7 +23,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('admin/movements', [InventoryMovementController::class, 'store'])->name('admin.movements.store');
 
         // Usuarios
-        Route::resource('admin/users', UserController::class);
+       Route::prefix('admin')
+        ->name('admin.')
+        ->middleware(['role:admin'])
+        ->group(function () {
+            Route::resource('users', UserController::class);
+        });
+
     });
 
     // NURSE
