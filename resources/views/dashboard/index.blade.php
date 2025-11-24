@@ -11,15 +11,12 @@
     @if($role === 'admin')
         <p class="text-blue-600 mb-4">Tienes acceso total al sistema.</p>
     @endif
-
     @if($role === 'nurse')
         <p class="text-green-600 mb-4">Puedes registrar movimientos del inventario.</p>
     @endif
-
     @if($role === 'doctor')
         <p class="text-purple-600 mb-4">Tienes acceso de lectura.</p>
     @endif
-
     @if($role === 'assistant')
         <p class="text-gray-600 mb-4">Acceso limitado a consultas.</p>
     @endif
@@ -56,7 +53,22 @@
     <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100 mb-10">
         <h2 class="text-xl font-bold mb-4 text-gray-700">Medicamentos con Stock Bajo</h2>
 
-        <table class="w-full text-left text-sm">
+        <!-- Buscador + PDF -->
+        <div class="flex flex-col sm:flex-row justify-between mb-4 gap-3">
+            <input type="text" 
+                   onkeyup="searchTable(this, 'tabla_stock_bajo')"
+                   placeholder="Buscar medicamento..."
+                   class="w-full sm:w-64 px-4 py-2 border rounded-lg shadow-sm">
+           
+            <a href="{{ route('pdf.stock-bajo') }}"
+               class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-center">
+               Descargar PDF
+            </a>
+        </div>
+        
+
+        <div class="overflow-x-auto">
+        <table id="tabla_stock_bajo" class="w-full text-left text-sm min-w-[600px]">
             <thead>
                 <tr class="border-b">
                     <th class="py-2">Nombre</th>
@@ -74,6 +86,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 
 
@@ -81,7 +94,21 @@
     <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100 mb-10">
         <h2 class="text-xl font-bold mb-4 text-gray-700">Últimos Movimientos</h2>
 
-        <table class="w-full text-sm">
+        <!-- Buscador + PDF -->
+        <div class="flex flex-col sm:flex-row justify-between mb-4 gap-3">
+            <input type="text"
+                   onkeyup="searchTable(this, 'tabla_movimientos')"
+                   placeholder="Buscar movimiento..."
+                   class="w-full sm:w-64 px-4 py-2 border rounded-lg shadow-sm">
+
+            <a href="{{ route('pdf.movimientos') }}"
+               class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-center">
+               Descargar PDF
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+        <table id="tabla_movimientos" class="w-full text-sm min-w-[600px]">
             <thead>
                 <tr class="border-b">
                     <th class="py-2">Tipo</th>
@@ -101,6 +128,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 
 
@@ -117,27 +145,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const ctx = document.getElementById('movChart');
+function searchTable(input, tableId) {
+    let filter = input.value.toLowerCase();
+    let rows = document.querySelectorAll(`#${tableId} tbody tr`);
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: @json($chartLabels),
-            datasets: [{
-                label: 'Movimientos',
-                data: @json($chartData),
-                borderWidth: 3,
-                borderColor: '#2563EB',
-                backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: true } }
-        }
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
     });
+}
 </script>
-
 
 @endsection
