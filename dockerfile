@@ -14,6 +14,6 @@ COPY . .
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-ENV PORT=8080
+ENV PORT=8000
 
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
