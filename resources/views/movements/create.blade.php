@@ -35,7 +35,7 @@
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-600">Nota</label>
+            <label class="block text-sm font-medium text-gray-600">Nombre del Paciente</label>
             <textarea name="note" rows="3"
                       class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">{{ old('note') }}</textarea>
         </div>

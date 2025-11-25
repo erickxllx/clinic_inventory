@@ -32,6 +32,7 @@
                     <th class="py-2">Cantidad</th>
                     <th class="py-2">Antes</th>
                     <th class="py-2">Después</th>
+                    <th class="py-2">Nombre del Paciente</th>
                     <th class="py-2">Registrado por</th>
                 </tr>
             </thead>
@@ -52,6 +53,7 @@
                         <td class="py-2">{{ $mv->quantity }}</td>
                         <td class="py-2">{{ $mv->previous_qty }}</td>
                         <td class="py-2">{{ $mv->new_qty }}</td>
+                        <td class="py-2">{{ $mv->note }}</td>
                         <td class="py-2">{{ $mv->user->name ?? 'N/A' }}</td>
                     </tr>
                 @empty
