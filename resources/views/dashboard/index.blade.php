@@ -107,27 +107,30 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table id="tabla_movimientos" class="w-full text-sm min-w-[600px]">
+                    <table id="tabla_movimientos" class="w-full text-sm min-w-[600px] table-auto">
                         <thead>
-                            <tr class="border-b">
-                                <th class="py-2">Tipo</th>
-                                <th class="py-2">Producto</th>
-                                <th class="py-2">Cantidad</th>
-                                <th class="py-2">Fecha</th>
+                            <tr class="border-b text-gray-600 text-left">
+                                <th class="py-2 px-3 w-28">Tipo</th>
+                                <th class="py-2 px-3 w-40">Producto</th>
+                                <th class="py-2 px-3 w-24 text-center">Cantidad</th>
+                                <th class="py-2 px-3 w-32 text-center">Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($latestMovements as $mv)
                                 <tr class="border-b">
-                                    <td class="py-2 capitalize">{{ $mv->type }}</td>
-                                    <td class="py-2">{{ $mv->product->name }}</td>
-                                    <td class="py-2">{{ $mv->quantity }}</td>
-                                    <td class="py-2">{{ $mv->date }}</td>
+                                    <td class="py-2 px-3">{{ $mv->type }}</td>
+                                    <td class="py-2 px-3">{{ $mv->product->name }}</td>
+                                    <td class="py-2 px-3 text-center">{{ $mv->quantity }}</td>
+                                    <td class="py-2 px-3 text-center">
+                                        {{ \Carbon\Carbon::parse($mv->date)->format('M d, Y') }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+
             </div>
 
 
