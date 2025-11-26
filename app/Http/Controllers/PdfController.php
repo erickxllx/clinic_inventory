@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Product;
 use App\Models\InventoryMovement;
+use Illuminate\Http\Request;
+
 
 class PdfController extends Controller
 {
@@ -33,4 +35,58 @@ class PdfController extends Controller
 
         return $pdf->download('reporte_medicamentos.pdf');
     }
+   
+    public function movimientosFiltrados(Request $request)
+    {
+        // Recogemos los filtros
+        $search = $request->input('search');
+        $from   = $request->input('from');
+        $to     = $request->input('to');
+        $type   = $request->input('type');
+        $user   = $request->input('user');
+
+        // Aplicamos la misma consulta (Query) que en la vista web
+        $query = InventoryMovement::with(['product', 'user'])->orderBy('date', 'desc');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('product', function($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('note', 'like', "%{$search}%")
+                ->orWhereHas('user', function($q3) use ($search) {
+                    $q3->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($from) {
+            $query->whereDate('date', '>=', $from);
+        }
+
+        if ($to) {
+            $query->whereDate('date', '<=', $to);
+        }
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+        
+        // Filtro por usuario (si lo usas)
+        if ($user) {
+             $query->whereHas('user', function($q) use ($user) {
+                $q->where('name', 'like', "%{$user}%");
+            });
+        }
+
+        $movements = $query->get(); // Usamos get() para PDF, no paginate()
+
+        $pdf = PDF::loadView('pdf.movimientos', compact('movements'));
+        
+        // Orientación horizontal para que quepa la tabla
+        $pdf->setPaper('a4', 'landscape'); 
+
+        return $pdf->download('reporte-movimientos.pdf');
+    }
 }
+

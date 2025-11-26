@@ -108,8 +108,11 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/pdf/stock-bajo', [PdfController::class, 'stockBajo'])->name('pdf.stock-bajo');
-    Route::get('/pdf/movimientos', [PdfController::class, 'movimientos'])->name('pdf.movimientos');
     Route::get('/pdf/medicamentos', [PdfController::class, 'medicamentos'])->name('pdf.medicamentos');
+    Route::get('/pdf/movimientos', [PdfController::class, 'movimientosFiltrados'])->name('pdf.movimientos');
+
+    
+
 });
 
 require __DIR__.'/auth.php';
